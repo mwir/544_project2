@@ -181,10 +181,10 @@ int						push_button_left;		//decrements gain value for selected P I or D
 int						push_button_right;		//increments gain value for selected P I or D
 int						PID_variable_value;				//a catch all value for any of the PID variables, will be divided by 100 for gain values
 int						selected_PID;
-volatile int			P_GAIN;
-volatile int			I_GAIN;
-volatile int			D_GAIN;
-volatile int			OFFSET_VALUE;
+volatile float			P_GAIN;
+volatile float			I_GAIN;
+volatile float			D_GAIN;
+volatile float			OFFSET_VALUE;
 
 //in initialize
 
@@ -254,6 +254,11 @@ int main()
 	clkfit = 0;
 	write = true;
 	written = false;
+	D_GAIN = 0;
+	P_GAIN = 0;
+	I_GAIN = 0;
+	OFFSET_VALUE = 0;
+	PID_variable_value = 0;
 
 	// start the PWM timer and kick of the processing by enabling the Microblaze interrupt
 	PWM_SetParams(&PWMTimerInst, pwm_freq, pwm_duty);	
@@ -303,19 +308,19 @@ int main()
 					// write the static text to the display
 				    PMDIO_LCD_clrd();
 				    PMDIO_LCD_setcursor(2,0);
-				    PMDIO_LCD_wrstring("D:   OFFSET:     ");
-					PMDIO_LCD_putnum(D_GAIN, 2);		//write the proportional gain value
-					PMDIO_LCD_putnum(I_GAIN, 12);		//write the proportional gain value
+				    PMDIO_LCD_wrstring("D:     OFFSET:    ");
+
 				    PMDIO_LCD_setcursor(1,0);
-				    PMDIO_LCD_wrstring("P:      I:  ");
-					PMDIO_LCD_putnum(P_GAIN, 2);		//write the proportional gain value
-					PMDIO_LCD_putnum(I_GAIN, 11);		//write the proportional gain value
+				    PMDIO_LCD_wrstring("P:     I:   ");
+
 					write=false;
 					written = true;
 				}
 			if (written);
 			{
+			NX4IO_RGBLED_setChnlEn(RGB1, false, false, false);
 			PID_PARAM_SELECT();	//Call PID SELECT FUNCTION
+
 			}
 			if (NX4IO_isPressed(BTNC))
 				{
@@ -427,7 +432,7 @@ int do_init(void)
     {
         return XST_FAILURE;
     }
- 
+
 	// start the interrupt controller such that interrupts are enabled for
 	// all devices that cause interrupts.
     status = XIntc_Start(&IntrptCtlrInst, XIN_REAL_MODE);
@@ -497,18 +502,20 @@ void PID_PARAM_SELECT(void)
 
 
 	if (NX4IO_isPressed(BTNU))
+	{
 		push_button_up++;
 	NX4IO_RGBLED_setChnlEn(RGB1, false, true, false);
-		{
+
 			if (push_button_up >3)
 			{
 				push_button_up = 0;
 				}
 		}
 	 if (NX4IO_isPressed(BTND))
+	 {
 		push_button_up--;
 	 NX4IO_RGBLED_setChnlEn(RGB1, true, true, true);
-		{
+
 			if ((push_button_up >3) | (push_button_up<0))  //this is kind of clunky but maybe functional? decrementing this isnt in the design specs anyway
 			{
 				push_button_up = 3; 
@@ -517,22 +524,24 @@ void PID_PARAM_SELECT(void)
 		
 		
 	if (NX4IO_isPressed(BTNR))
+	{
 		PID_variable_value++;
 	NX4IO_RGBLED_setChnlEn(RGB1, true, true, false);
-		{
-			if ((PID_variable_value >1000) | (PID_variable_value <0))
+
+			if ((PID_variable_value >=100) | (PID_variable_value <0))
 			{
 				PID_variable_value = 0;
 				}
 		}	
 		
 	if (NX4IO_isPressed(BTNL))
+	{
 		PID_variable_value--;
-	NX4IO_RGBLED_setChnlEn(RGB1, false, true, true);
-		{
-			if ((PID_variable_value >1000) |(PID_variable_value <0))
+	NX4IO_RGBLED_setChnlEn(RGB1, true, false, true);
+
+			if ((PID_variable_value >=100) |(PID_variable_value <0))
 			{
-				PID_variable_value = 1000;
+				PID_variable_value = 100;
 				}
 
 		
@@ -549,25 +558,31 @@ void PID_PARAM_SELECT(void)
 	if (selected_PID == P)
 	{
 	PMDIO_LCD_setcursor(1,0); //check position of P in final format
-	P_GAIN = PID_variable_value/100;
+	P_GAIN = PID_variable_value;
+	PMDIO_LCD_setcursor(1,0);
+	PMDIO_LCD_putnum(P_GAIN, 4);		//write the proportional gain value
 	}
 	
 	if (selected_PID == I)
 	{
 	PMDIO_LCD_setcursor(1,0);
-	I_GAIN = PID_variable_value/100;
+	I_GAIN = PID_variable_value;
+	PMDIO_LCD_setcursor(1,0);
+	PMDIO_LCD_putnum(I_GAIN, 13);		//write the proportional gain value
 	}
 	
 	if (selected_PID == D)
 	{
-	D_GAIN = PID_variable_value/100;
+	D_GAIN = PID_variable_value;
 	PMDIO_LCD_setcursor(2,0);
+	PMDIO_LCD_putnum(D_GAIN, 4);		//write the proportional gain value
 	}
 	
 	if (selected_PID == OFFSET)
 	{
-	OFFSET_VALUE = PID_variable_value;
+	OFFSET_VALUE = 10*PID_variable_value;
 	PMDIO_LCD_setcursor(2,0);
+	PMDIO_LCD_putnum(OFFSET_VALUE, 13);		//write the proportional gain value
 	}
 	//delay_msecs(500);
 }
@@ -582,13 +597,13 @@ void PID_PARAM_SELECT(void)
 */
 //********************************************************
 
-	
+
 /**************************** INTERRUPT HANDLERS ******************************/
 
 /****************************************************************************/
 /**
-* Fixed interval timer interrupt handler 
-*  
+* Fixed interval timer interrupt handler
+*
 * updates the global "timestamp" every millisecond.  "timestamp" is used for the delay_msecs() function
 * and as a time stamp for data collection and reporting.  Toggles the FIT clock which can be used as a visual
 * indication that the interrupt handler is being called.  Also makes RGB1 a PWM duty cycle indicator
@@ -599,15 +614,15 @@ void PID_PARAM_SELECT(void)
  *****************************************************************************/
 void FIT_Handler(void)
 {
-		
+
 	static	int			ts_interval = 0;			// interval counter for incrementing timestamp
 
 	// toggle FIT clock
 	clkfit ^= 0x01;
 	XGpio_DiscreteWrite(&GPIOInst0, 2, clkfit);
 
-	// update timestamp	
-	ts_interval++;	
+	// update timestamp
+	ts_interval++;
 	if (ts_interval > FIT_COUNT_1MSEC)
 	{
 		timestamp++;
@@ -624,7 +639,7 @@ void FIT_Handler(void)
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 /*
-				SOFTWARE PWD 
+				SOFTWARE PWD
 			two counters are implemented, one for high and one for low
 			if the incoming signal is high the high counter is incremented
 			while the low counter is reset and its value written to a variable for
