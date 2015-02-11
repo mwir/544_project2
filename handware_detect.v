@@ -45,14 +45,24 @@ always @(posedge pwd_clk) begin
 	end
 	
 	else if (~pwm_out) begin
-	 output_up_count<= up_count_next;
-	 averaging_register <= averaging_register+up_count_next;
-       up_count<=0;
-       down_count_next=down_count+1'b1;
-       down_count<=down_count_next; 
-       
+	 
+	averaging_register <= averaging_register+up_count_next;
+    up_count<=0;
+    down_count_next=down_count+1'b1;
+    down_count<=down_count_next; 
+	up_count<=up_count;
+	average_out <=average_out ;
+	output_up_count<=output_up_count;
+	output_down_count<=output_down_count;
 	end
 
+	else
+	down_count_next<=down_count_next;
+	down_count<=down_count;
+	 output_up_count<=output_up_count;
+	 averaging_register<=averaging_register;
+	up_count_next<=up_count_next;
+	 
 	
 	if (averaging_counter == 16) //this should give the average count over 16 cycles, smoothing out noise. 
 		averaging_counter<=0;
