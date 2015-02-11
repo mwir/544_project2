@@ -56,20 +56,22 @@ always @(posedge pwd_clk) begin
 	output_down_count<=output_down_count;
 	end
 
-	else
+	else begin
 	down_count_next<=down_count_next;
 	down_count<=down_count;
 	 output_up_count<=output_up_count;
 	 averaging_register<=averaging_register;
 	up_count_next<=up_count_next;
+	end
 	 
 	
-	if (averaging_counter == 16) //this should give the average count over 16 cycles, smoothing out noise. 
+	if (averaging_counter == 16) begin //this should give the average count over 16 cycles, smoothing out noise. 
 		averaging_counter<=0;
 		averaging_register <= averaging_register >> 5; //should be dividing by 16
 		average_out <= averaging_register; //check blocking vs non-blocking here. 
 		averaging_register <=1'b0;
-	else
+		end
+	else begin
 		averaging_register<=averaging_register;
 		average_out<=average_out;
 		end
