@@ -308,7 +308,7 @@ int main()
 					// write the static text to the display
 				    PMDIO_LCD_clrd();
 				    PMDIO_LCD_setcursor(2,0);
-				    PMDIO_LCD_wrstring("D:     OFFSET:    ");
+				    PMDIO_LCD_wrstring("D:     OFF:    ");
 
 				    PMDIO_LCD_setcursor(1,0);
 				    PMDIO_LCD_wrstring("P:     I:   ");
@@ -503,6 +503,7 @@ void PID_PARAM_SELECT(void)
 
 	if (NX4IO_isPressed(BTNU))
 	{
+		delay_msecs(50);
 		push_button_up++;
 	NX4IO_RGBLED_setChnlEn(RGB1, false, true, false);
 
@@ -523,12 +524,33 @@ void PID_PARAM_SELECT(void)
 		}
 		
 		
+
+
+	switch (push_button_up)
+		{
+			case 0x00:	selected_PID = P;
+			PID_variable_value = P_GAIN;
+					 break;
+			case 0x01:	selected_PID = I;
+			PID_variable_value = I_GAIN;
+						 break;
+			case 0x02:	selected_PID = D;
+			PID_variable_value = D_GAIN;
+						 break;
+			case 0x03:	selected_PID = OFFSET;
+			PID_variable_value = OFFSET_VALUE/10;
+				 break;
+		}
+
+
+
 	if (NX4IO_isPressed(BTNR))
 	{
+		delay_msecs(50);
 		PID_variable_value++;
 	NX4IO_RGBLED_setChnlEn(RGB1, true, true, false);
 
-			if ((PID_variable_value >=100) | (PID_variable_value <0))
+			if (PID_variable_value >100)
 			{
 				PID_variable_value = 0;
 				}
@@ -536,53 +558,66 @@ void PID_PARAM_SELECT(void)
 		
 	if (NX4IO_isPressed(BTNL))
 	{
+		delay_msecs(50);
 		PID_variable_value--;
 	NX4IO_RGBLED_setChnlEn(RGB1, true, false, true);
 
-			if ((PID_variable_value >=100) |(PID_variable_value <0))
+			if ((PID_variable_value >100) | (PID_variable_value <0))
 			{
 				PID_variable_value = 100;
 				}
 
 		
 	}
-		
-	switch (push_button_up)
-		{
-			case 0x00:	selected_PID = P;	break;
-			case 0x01:	selected_PID = I;	break;
-			case 0x02:	selected_PID = D;	break;
-			case 0x03:	selected_PID = OFFSET;	break;
-		}
-		
+
+
+
 	if (selected_PID == P)
 	{
-	PMDIO_LCD_setcursor(1,0); //check position of P in final format
-	P_GAIN = PID_variable_value;
-	PMDIO_LCD_setcursor(1,0);
-	PMDIO_LCD_putnum(P_GAIN, 4);		//write the proportional gain value
+		delay_msecs(50);
+		NX4IO_setLEDs(0x0001);
+		P_GAIN = PID_variable_value;
+
+	PMDIO_LCD_setcursor(1,3);
+	PMDIO_LCD_wrstring("    ");
+	PMDIO_LCD_setcursor(1,3);
+	PMDIO_LCD_putnum(P_GAIN, 10);		//write the proportional gain value
 	}
 	
 	if (selected_PID == I)
 	{
-	PMDIO_LCD_setcursor(1,0);
-	I_GAIN = PID_variable_value;
-	PMDIO_LCD_setcursor(1,0);
-	PMDIO_LCD_putnum(I_GAIN, 13);		//write the proportional gain value
+		delay_msecs(50);
+		NX4IO_setLEDs(0x0002);
+		I_GAIN = PID_variable_value;
+
+	PMDIO_LCD_setcursor(1,12);
+	PMDIO_LCD_wrstring("    ");
+	PMDIO_LCD_setcursor(1,12);
+	PMDIO_LCD_putnum(I_GAIN, 10);		//write the proportional gain value
 	}
 	
 	if (selected_PID == D)
 	{
-	D_GAIN = PID_variable_value;
-	PMDIO_LCD_setcursor(2,0);
-	PMDIO_LCD_putnum(D_GAIN, 4);		//write the proportional gain value
+		delay_msecs(50);
+		NX4IO_setLEDs(0x0004);
+
+		D_GAIN = PID_variable_value;
+	PMDIO_LCD_setcursor(2,3);
+	PMDIO_LCD_wrstring("    ");
+	PMDIO_LCD_setcursor(2,3);
+	PMDIO_LCD_putnum(D_GAIN, 10);		//write the proportional gain value
 	}
 	
 	if (selected_PID == OFFSET)
 	{
-	OFFSET_VALUE = 10*PID_variable_value;
-	PMDIO_LCD_setcursor(2,0);
-	PMDIO_LCD_putnum(OFFSET_VALUE, 13);		//write the proportional gain value
+		delay_msecs(50);
+		NX4IO_setLEDs(0x0008);
+
+		OFFSET_VALUE = 10*PID_variable_value;
+	PMDIO_LCD_setcursor(2,11);
+	PMDIO_LCD_wrstring("    ");
+	PMDIO_LCD_setcursor(2,11);
+	PMDIO_LCD_putnum(OFFSET_VALUE, 10);		//write the proportional gain value
 	}
 	//delay_msecs(500);
 }
