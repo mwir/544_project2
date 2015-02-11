@@ -59,7 +59,10 @@ always @(posedge pwd_clk) begin
 		averaging_register <= averaging_register >> 5; //should be dividing by 16
 		average_out <= averaging_register; //check blocking vs non-blocking here. 
 		averaging_register <=1'b0;
-	
+	else
+		averaging_register<=averaging_register;
+		average_out<=average_out;
+		end
 	end	
 endmodule		
 		
