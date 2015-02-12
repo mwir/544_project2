@@ -3,7 +3,7 @@
 //I guess hook up to the gpios? 
 
 module PWM_detect #(	// parameters
-	parameter integer	CLK_FREQUENCY_HZ		= 100000000, 
+
 
 	parameter integer	RESET_POLARITY_LOW		= 1,
 	
@@ -11,9 +11,10 @@ module PWM_detect #(	// parameters
 	parameter integer	SIMULATE_FREQUENCY_CNT	= 5
 )
 	(
-input pwm_out,
+input sensor_input,
 input pwd_clk,
 input sysreset,
+input averaging_number,
 output reg [31:0] output_up_count,	
 output reg [31:0]output_down_count,
 output reg [31:0]average_out 
@@ -29,9 +30,16 @@ output reg [31:0]average_out
 	
     reg[8:0]    averaging_counter = 32'b0;
 always @(posedge pwd_clk) begin
-   
-    
-    if (pwm_out) begin 
+   if (sysreset) begin
+   down_count_next<=0;
+	down_count<=0;
+	output_up_count<=0;
+	averaging_register<=0;
+	up_count_next<=0;
+	end
+    end
+ always @(posedge pwd_clk) begin 
+    if (sensor_input) begin 
     output_down_count<= down_count_next;
 	averaging_register <= averaging_register+down_count_next;
     down_count<=0;
@@ -44,7 +52,7 @@ always @(posedge pwd_clk) begin
     
 	end
 	
-	else if (~pwm_out) begin
+	else if (~sensor_input) begin
 	 
 	averaging_register <= averaging_register+up_count_next;
     up_count<=0;
@@ -65,7 +73,7 @@ always @(posedge pwd_clk) begin
 	end
 	 
 	
-	if (averaging_counter == 16) begin //this should give the average count over 16 cycles, smoothing out noise. 
+	if (averaging_counter == averaging_number) begin //this should give the average count over 16 cycles, smoothing out noise. 
 		averaging_counter<=0;
 		averaging_register <= averaging_register >> 5; //should be dividing by 16
 		average_out <= averaging_register; //check blocking vs non-blocking here. 
