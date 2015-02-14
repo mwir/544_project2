@@ -1,7 +1,7 @@
 
 `timescale 1 ns / 1 ps
 
-	module freq_det_v1_0_S00_AXI #
+	module freq_det_v2_0_S00_AXI #
 	(
 		// Users to add parameters here
 
@@ -92,6 +92,8 @@
 	reg [C_S_AXI_DATA_WIDTH-1 : 0] 	axi_rdata;
 	reg [1 : 0] 	axi_rresp;
 	reg  	axi_rvalid;
+	
+	wire [32:0] result;
 
 	// Example-specific design signals
 	// local parameter for addressing 32 bit / 64 bit C_S_AXI_DATA_WIDTH
@@ -113,9 +115,6 @@
 	reg [C_S_AXI_DATA_WIDTH-1:0]	 reg_data_out;
 	integer	 byte_index;
 
-    
-    wire [31:0] result;
-    
 	// I/O Connections assignments
 
 	assign S_AXI_AWREADY	= axi_awready;
@@ -394,13 +393,13 @@
 
 	// Add user logic here
     freq_det freq_det
-    (
-    .clk(S_AXI_ACLK),
-    .reset_n(S_AXI_ARESETN),
-    .freq_signal(freq_signal),
-    .result(result),
-    .divisor(divisor)
-    );
+        (
+        .clk(S_AXI_ACLK),
+        .reset_n(S_AXI_ARESETN),
+        .freq_signal(freq_signal),
+        .result(result),
+        .divisor(slv_reg1[7:0])
+        );
 	// User logic ends
 
 	endmodule

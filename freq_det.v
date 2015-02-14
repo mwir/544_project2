@@ -21,7 +21,7 @@ module freq_det(
             curr_per <= 0;
             result <= 0;
 			counter <= 0;
-            counting_high <= 0; 
+            counting_high <= 0;
 		end
 		
 		// Signal is high

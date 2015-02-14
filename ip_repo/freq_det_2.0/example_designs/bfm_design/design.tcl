@@ -10,7 +10,7 @@ proc create_ipi_design { offsetfile design_name } {
 	set_property CONFIG.ASSOCIATED_RESET ARESETN $ACLK
 
 	# Create instance: freq_det_0, and set properties
-	set freq_det_0 [ create_bd_cell -type ip -vlnv xilinx.com:user:freq_det:1.0 freq_det_0]
+	set freq_det_0 [ create_bd_cell -type ip -vlnv xilinx.com:user:freq_det:2.0 freq_det_0]
 
 	# Create instance: master_0, and set properties
 	set master_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:cdn_axi_bfm master_0]
@@ -29,10 +29,10 @@ proc create_ipi_design { offsetfile design_name } {
 	# Copy all address to interface_address.vh file
 	set bd_path [file dirname [get_property NAME [get_files ${design_name}.bd]]]
 	upvar 1 $offsetfile offset_file
-	set offset_file "${bd_path}/freq_det_v1_0_tb_include.vh"
+	set offset_file "${bd_path}/freq_det_v2_0_tb_include.vh"
 	set fp [open $offset_file "w"]
-	puts $fp "`ifndef freq_det_v1_0_tb_include_vh_"
-	puts $fp "`define freq_det_v1_0_tb_include_vh_\n"
+	puts $fp "`ifndef freq_det_v2_0_tb_include_vh_"
+	puts $fp "`define freq_det_v2_0_tb_include_vh_\n"
 	puts $fp "//Configuration current bd names"
 	puts $fp "`define BD_INST_NAME ${design_name}_i"
 	puts $fp "`define BD_WRAPPER ${design_name}_wrapper\n"
@@ -46,8 +46,8 @@ proc create_ipi_design { offsetfile design_name } {
 	close $fp
 }
 
-set ip_path [file dirname [file normalize [get_property XML_FILE_NAME [ipx::get_cores xilinx.com:user:freq_det:1.0]]]]
-set test_bench_file ${ip_path}/example_designs/bfm_design/freq_det_v1_0_tb.v
+set ip_path [file dirname [file normalize [get_property XML_FILE_NAME [ipx::get_cores xilinx.com:user:freq_det:2.0]]]]
+set test_bench_file ${ip_path}/example_designs/bfm_design/freq_det_v2_0_tb.v
 set interface_address_vh_file ""
 
 # Set IP Repository and Update IP Catalogue 
@@ -67,7 +67,7 @@ lappend all_bd $bd_name
 }
 
 for { set i 1 } { 1 } { incr i } {
-	set design_name "freq_det_v1_0_bfm_${i}"
+	set design_name "freq_det_v2_0_bfm_${i}"
 	if { [lsearch -exact -nocase $all_bd $design_name ] == -1 } {
 		break
 	}
@@ -81,9 +81,9 @@ import_files -force -norecurse $wrapper_file
 
 set_property SOURCE_SET sources_1 [get_filesets sim_1]
 import_files -fileset sim_1 -norecurse -force $test_bench_file
-remove_files -quiet -fileset sim_1 freq_det_v1_0_tb_include.vh
+remove_files -quiet -fileset sim_1 freq_det_v2_0_tb_include.vh
 import_files -fileset sim_1 -norecurse -force $interface_address_vh_file
-set_property top freq_det_v1_0_tb [get_filesets sim_1]
+set_property top freq_det_v2_0_tb [get_filesets sim_1]
 set_property top_lib {} [get_filesets sim_1]
 set_property top_file {} [get_filesets sim_1]
 launch_xsim -simset sim_1 -mode behavioral

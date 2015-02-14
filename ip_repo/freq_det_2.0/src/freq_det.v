@@ -16,7 +16,7 @@ module freq_det(
 	reg counting_high = 0;			// Flag used for determining if the signal just transitioned
 	
 	always @(posedge clk) begin
-		if (reset_n == 1b'0) begin
+		if (reset_n == 1'b0) begin
             sum <= 0;
             curr_per <= 0;
             result <= 0;

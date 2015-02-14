@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<Runs Version="1" Minor="0">
-	<Run Id="synth_1" LaunchDir="c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/edit_freq_det_v1_0.runs/synth_1" FlowId="Vivado_Synthesis" FromStepId="vivado" ToStepId="vivado"/>
-</Runs>
-
