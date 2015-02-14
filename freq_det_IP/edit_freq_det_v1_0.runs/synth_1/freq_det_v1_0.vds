@@ -1,0 +1,336 @@
+#-----------------------------------------------------------
+# Vivado v2014.4 (64-bit)
+# SW Build 1071353 on Tue Nov 18 18:29:27 MST 2014
+# IP Build 1070531 on Tue Nov 18 01:10:18 MST 2014
+# Start of session at: Fri Feb 13 16:13:05 2015
+# Process ID: 6040
+# Log file: c:/Users/Colten/Dropbox/_SCHOOL/ECE544_Embedded_Programming/Project_Two/544_project2/freq_det_IP/edit_freq_det_v1_0.runs/synth_1/freq_det_v1_0.vds
+# Journal file: c:/Users/Colten/Dropbox/_SCHOOL/ECE544_Embedded_Programming/Project_Two/544_project2/freq_det_IP/edit_freq_det_v1_0.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source freq_det_v1_0.tcl
+# set_param gui.test TreeTableDev
+# debug::add_scope template.lib 1
+# set_msg_config -id {HDL 9-1061} -limit 100000
+# set_msg_config -id {HDL 9-1654} -limit 100000
+# create_project -in_memory -part xc7a100tcsg324-1
+# set_param project.compositeFile.enableAutoGeneration 0
+# set_param synth.vivado.isSynthRun true
+# set_property webtalk.parent_dir c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/edit_freq_det_v1_0.cache/wt [current_project]
+# set_property parent.project_path c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/edit_freq_det_v1_0.xpr [current_project]
+# set_property default_lib xil_defaultlib [current_project]
+# set_property target_language Verilog [current_project]
+# set_property ip_repo_paths {
+#   C:/Users/Colten/Dropbox/_SCHOOL/ECE544_Embedded_Programming/Project_Two/544_project2/freq_det_IP/freq_det_1.0
+#   C:/Users/Colten/Dropbox/_SCHOOL/ECE544_Embedded_Programming/ip_repo
+# } [current_project]
+# read_verilog -library xil_defaultlib {
+#   c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/edit_freq_det_v1_0.srcs/sources_1/imports/544_project2/averaging_freq_det.v
+#   c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/freq_det_1.0/hdl/freq_det_v1_0_S00_AXI.v
+#   c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/freq_det_1.0/hdl/freq_det_v1_0.v
+# }
+# catch { write_hwdef -file freq_det_v1_0.hwdef }
+INFO: [Vivado_Tcl 4-279] hardware handoff file cannot be generated as there is no block diagram instance in the design
+# synth_design -top freq_det_v1_0 -part xc7a100tcsg324-1
+Command: synth_design -top freq_det_v1_0 -part xc7a100tcsg324-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7a100t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a100t'
+INFO: [Common 17-1223] The version limit for your license is '2015.01' and will expire in -13 days. A version limit expiration means that, although you may be able to continue to use the current version of tools or IP with this license, you will not be eligible for any updates or new releases.
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 230.051 ; gain = 67.555
+---------------------------------------------------------------------------------
+INFO: [Synth 8-638] synthesizing module 'freq_det_v1_0' [c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/freq_det_1.0/hdl/freq_det_v1_0.v:4]
+	Parameter C_S00_AXI_DATA_WIDTH bound to: 32 - type: integer 
+	Parameter C_S00_AXI_ADDR_WIDTH bound to: 4 - type: integer 
+INFO: [Synth 8-638] synthesizing module 'freq_det_v1_0_S00_AXI' [c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/freq_det_1.0/hdl/freq_det_v1_0_S00_AXI.v:4]
+	Parameter C_S_AXI_DATA_WIDTH bound to: 32 - type: integer 
+	Parameter C_S_AXI_ADDR_WIDTH bound to: 4 - type: integer 
+	Parameter ADDR_LSB bound to: 2 - type: integer 
+	Parameter OPT_MEM_ADDR_BITS bound to: 1 - type: integer 
+INFO: [Synth 8-638] synthesizing module 'freq_det' [c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/edit_freq_det_v1_0.srcs/sources_1/imports/544_project2/averaging_freq_det.v:5]
+INFO: [Synth 8-256] done synthesizing module 'freq_det' (1#1) [c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/edit_freq_det_v1_0.srcs/sources_1/imports/544_project2/averaging_freq_det.v:5]
+WARNING: [Synth 8-689] width (1) of port connection 'divisor' does not match port width (8) of module 'freq_det' [c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/freq_det_1.0/hdl/freq_det_v1_0_S00_AXI.v:402]
+INFO: [Synth 8-226] default block is never used [c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/freq_det_1.0/hdl/freq_det_v1_0_S00_AXI.v:226]
+INFO: [Synth 8-226] default block is never used [c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/freq_det_1.0/hdl/freq_det_v1_0_S00_AXI.v:367]
+WARNING: [Synth 8-3848] Net divisor in module/entity freq_det_v1_0_S00_AXI does not have driver. [c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/freq_det_1.0/hdl/freq_det_v1_0_S00_AXI.v:402]
+INFO: [Synth 8-256] done synthesizing module 'freq_det_v1_0_S00_AXI' (2#1) [c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/freq_det_1.0/hdl/freq_det_v1_0_S00_AXI.v:4]
+INFO: [Synth 8-256] done synthesizing module 'freq_det_v1_0' (3#1) [c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/freq_det_1.0/hdl/freq_det_v1_0.v:4]
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:04 ; elapsed = 00:00:05 . Memory (MB): peak = 263.914 ; gain = 101.418
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:04 ; elapsed = 00:00:05 . Memory (MB): peak = 263.914 ; gain = 101.418
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7a100tcsg324-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:04 ; elapsed = 00:00:05 . Memory (MB): peak = 263.914 ; gain = 101.418
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-3848] Net divisor in module/entity freq_det_v1_0_S00_AXI does not have driver. [c:/users/colten/dropbox/_school/ece544_embedded_programming/project_two/544_project2/freq_det_ip/freq_det_1.0/hdl/freq_det_v1_0_S00_AXI.v:402]
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:04 ; elapsed = 00:00:05 . Memory (MB): peak = 271.152 ; gain = 108.656
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+No constraint files found.
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     32 Bit       Adders := 1     
+	   2 Input      8 Bit       Adders := 1     
++---Registers : 
+	               32 Bit    Registers := 6     
+	                8 Bit    Registers := 1     
+	                4 Bit    Registers := 2     
+	                2 Bit    Registers := 2     
+	                1 Bit    Registers := 6     
++---Muxes : 
+	   2 Input     32 Bit        Muxes := 6     
+	   4 Input     32 Bit        Muxes := 4     
+	   2 Input      1 Bit        Muxes := 10    
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Hierarchical Component Statistics 
+---------------------------------------------------------------------------------
+Hierarchical RTL Component report 
+Module freq_det_v1_0 
+Detailed RTL Component Info : 
+Module freq_det 
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input     32 Bit       Adders := 1     
+	   2 Input      8 Bit       Adders := 1     
++---Registers : 
+	               32 Bit    Registers := 2     
+	                8 Bit    Registers := 1     
+	                1 Bit    Registers := 1     
++---Muxes : 
+	   2 Input     32 Bit        Muxes := 3     
+	   2 Input      1 Bit        Muxes := 4     
+Module freq_det_v1_0_S00_AXI 
+Detailed RTL Component Info : 
++---Registers : 
+	               32 Bit    Registers := 4     
+	                4 Bit    Registers := 2     
+	                2 Bit    Registers := 2     
+	                1 Bit    Registers := 5     
++---Muxes : 
+	   2 Input     32 Bit        Muxes := 3     
+	   4 Input     32 Bit        Muxes := 4     
+	   2 Input      1 Bit        Muxes := 6     
+---------------------------------------------------------------------------------
+Finished RTL Hierarchical Component Statistics
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Loading clock regions from C:/Xilinx/Vivado/2014.4/data\parts/xilinx/artix7/artix7/xc7a100t/ClockRegion.xml
+Loading clock buffers from C:/Xilinx/Vivado/2014.4/data\parts/xilinx/artix7/artix7/xc7a100t/ClockBuffers.xml
+Loading clock placement rules from C:/Xilinx/Vivado/2014.4/data/parts/xilinx/artix7/ClockPlacerRules.xml
+Loading package pin functions from C:/Xilinx/Vivado/2014.4/data\parts/xilinx/artix7/PinFunctions.xml...
+Loading package from C:/Xilinx/Vivado/2014.4/data\parts/xilinx/artix7/artix7/xc7a100t/csg324/Package.xml
+Loading io standards from C:/Xilinx/Vivado/2014.4/data\./parts/xilinx/artix7/IOStandards.xml
+Loading device configuration modes from C:/Xilinx/Vivado/2014.4/data\parts/xilinx/artix7/ConfigModes.xml
+Part Resources:
+DSPs: 240 (col length:80)
+BRAMs: 270 (col length: RAMB18 80 RAMB36 40)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+Start Parallel Synthesis Optimization  : Time (s): cpu = 00:00:07 ; elapsed = 00:00:09 . Memory (MB): peak = 414.176 ; gain = 251.680
+---------------------------------------------------------------------------------
+Start Cross Boundary Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-3331] design freq_det_v1_0 has unconnected port s00_axi_awprot[2]
+WARNING: [Synth 8-3331] design freq_det_v1_0 has unconnected port s00_axi_awprot[1]
+WARNING: [Synth 8-3331] design freq_det_v1_0 has unconnected port s00_axi_awprot[0]
+WARNING: [Synth 8-3331] design freq_det_v1_0 has unconnected port s00_axi_arprot[2]
+WARNING: [Synth 8-3331] design freq_det_v1_0 has unconnected port s00_axi_arprot[1]
+WARNING: [Synth 8-3331] design freq_det_v1_0 has unconnected port s00_axi_arprot[0]
+---------------------------------------------------------------------------------
+Finished Cross Boundary Optimization : Time (s): cpu = 00:00:07 ; elapsed = 00:00:09 . Memory (MB): peak = 414.176 ; gain = 251.680
+---------------------------------------------------------------------------------
+Finished Parallel Reinference  : Time (s): cpu = 00:00:07 ; elapsed = 00:00:09 . Memory (MB): peak = 414.176 ; gain = 251.680
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+No constraint files found.
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\freq_det_v1_0_S00_AXI_inst/axi_rresp_reg[1] )
+INFO: [Synth 8-3333] propagating constant 0 across sequential element (\freq_det_v1_0_S00_AXI_inst/axi_bresp_reg[1] )
+WARNING: [Synth 8-3332] Sequential element (\freq_det_v1_0_S00_AXI_inst/axi_bresp_reg[1] ) is unused and will be removed from module freq_det_v1_0.
+WARNING: [Synth 8-3332] Sequential element (\freq_det_v1_0_S00_AXI_inst/axi_bresp_reg[0] ) is unused and will be removed from module freq_det_v1_0.
+WARNING: [Synth 8-3332] Sequential element (\freq_det_v1_0_S00_AXI_inst/axi_araddr_reg[1] ) is unused and will be removed from module freq_det_v1_0.
+WARNING: [Synth 8-3332] Sequential element (\freq_det_v1_0_S00_AXI_inst/axi_araddr_reg[0] ) is unused and will be removed from module freq_det_v1_0.
+WARNING: [Synth 8-3332] Sequential element (\freq_det_v1_0_S00_AXI_inst/axi_awaddr_reg[1] ) is unused and will be removed from module freq_det_v1_0.
+WARNING: [Synth 8-3332] Sequential element (\freq_det_v1_0_S00_AXI_inst/axi_awaddr_reg[0] ) is unused and will be removed from module freq_det_v1_0.
+WARNING: [Synth 8-3332] Sequential element (\freq_det_v1_0_S00_AXI_inst/axi_rresp_reg[1] ) is unused and will be removed from module freq_det_v1_0.
+WARNING: [Synth 8-3332] Sequential element (\freq_det_v1_0_S00_AXI_inst/axi_rresp_reg[0] ) is unused and will be removed from module freq_det_v1_0.
+---------------------------------------------------------------------------------
+Start Area Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Area Optimization : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 433.941 ; gain = 271.445
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Area Optimization : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 433.941 ; gain = 271.445
+---------------------------------------------------------------------------------
+Finished Parallel Area Optimization  : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 433.941 ; gain = 271.445
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+Finished Parallel Synthesis Optimization  : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 433.941 ; gain = 271.445
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+No constraint files found.
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 433.941 ; gain = 271.445
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 433.941 ; gain = 271.445
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 433.941 ; gain = 271.445
+---------------------------------------------------------------------------------
+
+Report Check Netlist: 
++------+------------------+-------+---------+-------+------------------+
+|      |Item              |Errors |Warnings |Status |Description       |
++------+------------------+-------+---------+-------+------------------+
+|1     |multi_driven_nets |      0|        0|Passed |Multi driven nets |
++------+------------------+-------+---------+-------+------------------+
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 433.941 ; gain = 271.445
+---------------------------------------------------------------------------------
+
+Report RTL Partitions: 
++-+--------------+------------+----------+
+| |RTL Partition |Replication |Instances |
++-+--------------+------------+----------+
++-+--------------+------------+----------+
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 433.941 ; gain = 271.445
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RAM, DSP and Shift Register Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+-------+------+
+|      |Cell   |Count |
++------+-------+------+
+|1     |BUFG   |     1|
+|2     |CARRY4 |    17|
+|3     |LUT1   |    33|
+|4     |LUT2   |    37|
+|5     |LUT3   |    10|
+|6     |LUT4   |    18|
+|7     |LUT5   |     4|
+|8     |LUT6   |    34|
+|9     |FDRE   |   242|
+|10    |IBUF   |    48|
+|11    |OBUF   |    41|
++------+-------+------+
+
+Report Instance Areas: 
++------+-----------------------------+----------------------+------+
+|      |Instance                     |Module                |Cells |
++------+-----------------------------+----------------------+------+
+|1     |top                          |                      |   485|
+|2     |  freq_det_v1_0_S00_AXI_inst |freq_det_v1_0_S00_AXI |   395|
+|3     |    freq_det                 |freq_det              |   203|
++------+-----------------------------+----------------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 433.941 ; gain = 271.445
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 17 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:08 . Memory (MB): peak = 433.941 ; gain = 253.406
+Synthesis Optimization Complete : Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 433.941 ; gain = 271.445
+INFO: [Project 1-571] Translating synthesized netlist
+INFO: [Netlist 29-17] Analyzing 65 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-140] Inserted 0 IBUFs to IO ports without IO buffers.
+INFO: [Opt 31-141] Inserted 0 OBUFs to IO ports without IO buffers.
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+INFO: [Common 17-83] Releasing license: Synthesis
+21 Infos, 17 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 488.156 ; gain = 310.801
+# write_checkpoint -noxdef freq_det_v1_0.dcp
+# catch { report_utilization -file freq_det_v1_0_utilization_synth.rpt -pb freq_det_v1_0_utilization_synth.pb }
+report_utilization: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.045 . Memory (MB): peak = 488.156 ; gain = 0.000
+INFO: [Common 17-206] Exiting Vivado at Fri Feb 13 16:13:16 2015...

@@ -1,0 +1,10 @@
+#-----------------------------------------------------------
+# Vivado v2014.4 (64-bit)
+# SW Build 1071353 on Tue Nov 18 18:29:27 MST 2014
+# IP Build 1070531 on Tue Nov 18 01:10:18 MST 2014
+# Start of session at: Fri Feb 13 16:13:05 2015
+# Process ID: 6040
+# Log file: c:/Users/Colten/Dropbox/_SCHOOL/ECE544_Embedded_Programming/Project_Two/544_project2/freq_det_IP/edit_freq_det_v1_0.runs/synth_1/freq_det_v1_0.vds
+# Journal file: c:/Users/Colten/Dropbox/_SCHOOL/ECE544_Embedded_Programming/Project_Two/544_project2/freq_det_IP/edit_freq_det_v1_0.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source freq_det_v1_0.tcl
