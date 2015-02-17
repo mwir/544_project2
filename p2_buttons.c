@@ -19,11 +19,11 @@
 *  (maybe) and/or sampled inputs/outputs
 *
 * NOTE: This program used code extensively from Roy Kravitz's pwm_test.c file
-* 	 				 
+*
 * <pre>
 * MODIFICATION HISTORY:
 *
-* Ver 1  Who Mark Ronay Date 1/29/2015    
+* Ver 1  Who Mark Ronay Date 1/29/2015
 * ----- ---- -------- -----------------------------------------------
 
 *
@@ -85,7 +85,7 @@
 #define FIT_IN_CLOCK_FREQ_HZ	CPU_CLOCK_FREQ_HZ
 #define FIT_CLOCK_FREQ_HZ		40000
 #define FIT_COUNT				(FIT_IN_CLOCK_FREQ_HZ / FIT_CLOCK_FREQ_HZ)
-#define FIT_COUNT_1MSEC			40	
+#define FIT_COUNT_1MSEC			40
 
 // PWM selected frequencies in Hz
 #define PWM_FREQ_10HZ			10
@@ -173,7 +173,7 @@ bool						written;
 #define	D				2
 #define OFFSET			3
 
- 
+
 bool					push_button_center;		// flag to go off if center push button is pressed for selecting gains on PID
 int						push_button_up;			// increments from 0 to 3, each of which selects either P I or D or OFFSET
 
@@ -186,51 +186,39 @@ volatile float			I_GAIN;
 volatile float			D_GAIN;
 volatile float			OFFSET_VALUE;
 
-//in initialize
+/****************************** typedefs and structures **********************/
+typedef enum {STANDBY = 0x0, PID = 0x01, BANGBANG = 0x02,
+				FUZZY = 0x03, TEST_INVALID = 0xFF} Test_t;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//hardware mode is 0, software mode is 1
-volatile unsigned int		dutycycle; //i dont know why one of these is a u32 and the other an int, but it works fine
+/************************************************************************/
 volatile u32 		freq;
 
-				
-/*---------------------------------------------------------------------------*/					
+
+/*---------------------------------------------------------------------------*/
 int						debugen = 0;		// debug level/flag
 /*---------------------------------------------------------------------------*/
-		
-/*****************************************************************************/	
-	
+
+/*****************************************************************************/
+
 
 /************************** Function Prototypes ******************************/
 int				do_init(void);											// initialize system
 void			delay_msecs(unsigned int msecs);						// busy-wait delay for "msecs" miliseconds
 void			voltstostrng(float v, char* s);							// converts volts to a string
 void			update_lcd(int freq, int dutycyle, u32 linenum);		// update LCD display
-void			update_lcd(int freq, int dutycyle, u32 linenum);		// update LCD display				
+void			update_lcd(int freq, int dutycyle, u32 linenum);		// update LCD display
 void			FIT_Handler(void);										// fixed interval timer interrupt handler
 void			PID_PARAM_SELECT(void);
-
+void			PID_FUNCTION(void);
+void			BANGBANG_FUNCTION(void);
+void			FUZZY_FUNCTION(void);
+void			PID_OPTIMIZER(void);
 /************************** MAIN PROGRAM ************************************/
 int main()
 {
 	XStatus 	status;
-
-
+	u16			algo_select_sw, old_algo_select_sw = 0xFFFF;
+	u16			test_select_sw;
 
 	push_button_center = false;
 	init_platform();
@@ -245,9 +233,9 @@ int main()
  		PMDIO_LCD_wrstring("INIT FAILED- EXITING");
  		exit(XST_FAILURE);
  	}
- 	
+
 	// initialize the global variables
-	timestamp = 0;							
+	timestamp = 0;
 
 	push_button_center = false;
 	run = true;
@@ -261,13 +249,13 @@ int main()
 	PID_variable_value = 0;
 
 	// start the PWM timer and kick of the processing by enabling the Microblaze interrupt
-	PWM_SetParams(&PWMTimerInst, pwm_freq, pwm_duty);	
+	PWM_SetParams(&PWMTimerInst, pwm_freq, pwm_duty);
 	PWM_Start(&PWMTimerInst);
     microblaze_enable_interrupts();
-    
-	// display the greeting   
+
+	// display the greeting
     PMDIO_LCD_setcursor(1,0);
-    PMDIO_LCD_wrstring("544: BUTTON TEST");
+    PMDIO_LCD_wrstring("544: UI TEST");
 	PMDIO_LCD_setcursor(2,0);
 	PMDIO_LCD_wrstring(" by Mark Ronay ");
 	NX4IO_setLEDs(0x0000FFFF);
@@ -283,11 +271,21 @@ int main()
     NX4IO_setLEDs(0x00000000);
     NX410_SSEG_setAllDigits(SSEGLO, CC_BLANK, CC_BLANK, CC_BLANK, CC_BLANK, DP_NONE);
     NX410_SSEG_setAllDigits(SSEGHI, CC_BLANK, CC_BLANK, CC_BLANK, CC_BLANK, DP_NONE);
-      
+
     // main loop
 	do
-	{ 
+	{
+		algo_select_sw = NX4IO_getSwitches() & 0x03;
+		test_select_sw = NX4IO_getSwitches() & 0xF000;
+		//we want to create a way to set a set point, probably with the rotary knob.pushing the knob will transmit
+		//data. perhaps we can have more functionality with a different switches mask
+		if(test_select_sw ==0x8000)
+		{
+			PID_OPTIMIZER();
+		}
 
+		if (test_select_sw == 0)
+		{
 			if (NX4IO_isPressed(BTNC))
 			{
 				push_button_center = !push_button_center;
@@ -340,26 +338,60 @@ int main()
 
 			if( !push_button_center)
 			{
-				PMDIO_LCD_setcursor(1,0);
-				PMDIO_LCD_wrstring("STANDBY          ");
-				PMDIO_LCD_setcursor(2,0);
-				PMDIO_LCD_wrstring("                  ");
 				NX4IO_RGBLED_setChnlEn(RGB1, false, false, true);
+							if (algo_select_sw == STANDBY)
+							{
+
+								NX4IO_RGBLED_setChnlEn(RGB2, false, false, false);
+								PMDIO_LCD_setcursor(1,0);
+								PMDIO_LCD_wrstring("STANDBY          ");
+								PMDIO_LCD_setcursor(2,0);
+								PMDIO_LCD_wrstring("                  ");
+
+							}
+
+							if (algo_select_sw == PID)
+							{
+								PMDIO_LCD_setcursor(1,0);
+								PMDIO_LCD_wrstring("PID          ");
+								PMDIO_LCD_setcursor(2,0);
+								PMDIO_LCD_wrstring("                  ");
+								PID_FUNCTION();
+							}
+
+							if (algo_select_sw == BANGBANG)
+							{
+								PMDIO_LCD_setcursor(1,0);
+								PMDIO_LCD_wrstring("BANGBANG          ");
+								PMDIO_LCD_setcursor(2,0);
+								PMDIO_LCD_wrstring("                  ");
+								BANGBANG_FUNCTION();
+							}
+
+							if (algo_select_sw == FUZZY)
+							{
+								PMDIO_LCD_setcursor(1,0);
+								PMDIO_LCD_wrstring("FUZZY          ");
+								PMDIO_LCD_setcursor(2,0);
+								PMDIO_LCD_wrstring("                  ");
+								FUZZY_FUNCTION();
+							}
 
 			}
+		}
 	}while (run);
-	
+
 
 
  }
 
 
 /**************************** HELPER FUNCTIONS ******************************/
-		
+
 /****************************************************************************/
 /**
 * initialize the system
-* 
+*
 * This function is executed once at start-up and after resets.  It initializes
 * the peripherals and registers the interrupt handler(s)
 *****************************************************************************/
@@ -374,20 +406,20 @@ int do_init(void)
 	{
 		return XST_FAILURE;
 	}
-	
+
 	status = PMDIO_initialize(PMDIO_BASEADDR);
 	if (status != XST_SUCCESS)
 	{
 		return XST_FAILURE;
 	}
-	
+
 	// successful initialization.  Set the rotary encoder
 	// to increment from 0 by DUTY_CYCLE_CHANGE counts per
 	// rotation.
  	PMDIO_ROT_init(DUTY_CYCLE_CHANGE, true);
 	PMDIO_ROT_clear();
-	
-	
+
+
 	// initialize the first GPIO instance
 	status = XGpio_Initialize(&GPIOInst0, GPIO_0_DEVICE_ID);
 	if (status != XST_SUCCESS)
@@ -399,14 +431,16 @@ int do_init(void)
 	XGpio_SetDataDirection(&GPIOInst0, 2, 0xFE);
 
 
-	// initialize the second GPIO instance
-		status = XGpio_Initialize(&GPIOInst1, GPIO_1_DEVICE_ID);
-		if (status != XST_SUCCESS)
-		{
-			return XST_FAILURE;
-		}
-		//both channels should default as input.
+	//+++++++++++++++++++++++++++++++++++++++
 
+	/*
+	 * 			INITIALIZE CUSTOM IP HERE
+	 *
+	 *
+	 *
+	 *
+	 */
+	//++++++++++++++++++++++++++++++++++++++
 
 
 	// initialize the PWM timer/counter instance but do not start it
@@ -458,19 +492,19 @@ int do_init(void)
 /****************************************************************************/
 /**
 * delay execution for "n" msecs
-* 
-* Uses a busy-wait loop to delay execution.  Timing is approximate but we're not 
-*  looking for precision here, just a uniform delay function.  The function uses the 
+*
+* Uses a busy-wait loop to delay execution.  Timing is approximate but we're not
+*  looking for precision here, just a uniform delay function.  The function uses the
 *  global "timestamp" which is incremented every msec by FIT_Handler().
 *
 * @note
-* Assumes that this loop is running faster than the fit_interval ISR 
+* Assumes that this loop is running faster than the fit_interval ISR
 *
 * @note
 * If your program seems to hang it could be because the function never returns
 * Possible causes for this are almost certainly related to the FIT timer.  Check
-* your connections...is the timer clocked?  is it stuck in reset?  is the interrupt 
-* output connected? You would not be the first student to face this...not by a longshot 
+* your connections...is the timer clocked?  is it stuck in reset?  is the interrupt
+* output connected? You would not be the first student to face this...not by a longshot
 *****************************************************************************/
 void delay_msecs(unsigned int msecs)
 {
@@ -633,6 +667,57 @@ void PID_PARAM_SELECT(void)
 //********************************************************
 
 
+void PID_FUNCTION(void)
+{
+	NX4IO_RGBLED_setChnlEn(RGB2, false, true, false);
+}
+
+void BANGBANG_FUNCTION(void)
+{
+	NX4IO_RGBLED_setChnlEn(RGB2, true, false, false);
+}
+
+
+void FUZZY_FUNCTION(void)
+{
+	NX4IO_RGBLED_setChnlEn(RGB2, false, false, true);
+}
+
+void PID_OPTIMIZER(void)
+{
+	int i = 100;
+	PMDIO_LCD_setcursor(1,0);
+	PMDIO_LCD_wrstring("OPTIMIZING!!    ");
+	PMDIO_LCD_setcursor(2,0);
+	PMDIO_LCD_wrstring("                  ");
+
+	/*
+	 * psuedocode goes here
+	 *
+	 */
+	do
+	{
+		NX4IO_RGBLED_setChnlEn(RGB2, true, true, true);
+		delay_msecs(100);
+		NX4IO_RGBLED_setChnlEn(RGB2, false,false, false);
+				delay_msecs(100);
+		i=i-1;
+	}
+	while(i>0);
+	PMDIO_LCD_setcursor(1,0);
+	PMDIO_LCD_wrstring("OPTIMIZING DONE!!");
+	PMDIO_LCD_setcursor(2,0);
+	PMDIO_LCD_wrstring("                  ");
+	delay_msecs(1000);
+}
+
+
+
+
+
+
+
+
 /**************************** INTERRUPT HANDLERS ******************************/
 
 /****************************************************************************/
@@ -670,79 +755,6 @@ void FIT_Handler(void)
 	// Note that this won't work well as the PWM frequency approaches
 	// or exceeds 10KHz
 
-	gpio_in = XGpio_DiscreteRead(&GPIOInst0, 1);
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-/*
-				SOFTWARE PWD
-			two counters are implemented, one for high and one for low
-			if the incoming signal is high the high counter is incremented
-			while the low counter is reset and its value written to a variable for
-			later calculation
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-*/
-	if (gpio_in & 0x00000001) //if pwm singal is high
-	{
-		software_up_counter++;
-		if (software_down_counter != 0)
-			{
-
-			software_pwm_down_count = software_down_counter;
-			software_down_counter = 0;
-			}
-	}
-
-	if (~gpio_in & 0x00000001)
-	{
-		software_down_counter++;
-			if (software_up_counter !=0)
-
-			{
-				software_pwm_up_count = software_up_counter;
-
-			software_up_counter = 0;
-			}
-	}
-
-
-	//	}
-	/*if (~mode_select)///software mode << assigns counts gathered by software to variables used for calculation and display
-	{
-		NX410_SSEG_setAllDigits(SSEGHI, CC_1, CC_BLANK, CC_BLANK, CC_BLANK, DP_NONE);
-		NX4IO_RGBLED_setChnlEn(RGB1, false, false, true);
-	high_count = software_pwm_up_count;
-	low_count = software_pwm_down_count;
-	total_count = software_pwm_up_count + software_pwm_down_count;
-	dutycycle = 100*high_count/(total_count);
-	freq = 100000000/(2500*(high_count+low_count)); //divide by 2500 because this block only executes when FIT causes interrupt every 2500 cycles
-
-
-
-	}
-
-
-
-	if (mode_select) ///hardware mode << assigns counts gathered by hardware module to variables used for calculation and display
-	{
-
-		NX410_SSEG_setAllDigits(SSEGHI, CC_2, CC_BLANK, CC_BLANK, CC_BLANK, DP_NONE);
-		NX4IO_RGBLED_setChnlEn(RGB1, true, false, false);
-	high_count = XGpio_DiscreteRead(&GPIOInst1, 1);
-	low_count = XGpio_DiscreteRead(&GPIOInst1, 2);
-	total_count = high_count + low_count;
-	dutycycle = 100*high_count/(total_count);
-	freq = 100000000/((high_count+low_count));
-	}
-// DEBUG/DISPLAY LED sets RGB2 to go turquoise if PWM duty cycle exceeds 50%
-	if (high_count > low_count)
-	{
-				NX4IO_RGBLED_setChnlEn(RGB2, false, true, true);
-					}
-	else
-	{
-				NX4IO_RGBLED_setChnlEn(RGB2, false, false, false);
-					}
-*/
 }
 //END OF FILE
