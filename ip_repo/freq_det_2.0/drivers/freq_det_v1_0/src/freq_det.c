@@ -2,17 +2,26 @@
 
 /***************************** Include Files *******************************/
 #include "freq_det.h"
-#define clock 		100000000
+#include "xparameters.h"
+#include "xbasic_types.h"
+#include "xtmrctr_l.h"
+
+
 /************************** Function Definitions ***************************/
 
 
 //read period count - period out is tied to slave register 0 
 
 
-int FrequencyOut(void)
+ PeriodOut(void)
+{
+ Period_count = FREQ_DET_mReadReg(BaseAddress, 0)
+ 
+}
 
- Period_count = FREQ_DET_mReadReg(BaseAddress, RegOffset)
- Frequency = clock/Period_count
+ 
+ 
+
  
  //divisor is tied to slave register 1 [7:0] - if set to 0 update every period
  
