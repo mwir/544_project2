@@ -2,26 +2,31 @@
 //we have 5 output possibilities, each one corresponding to an additional drive on the PWM signal
 
 #define Z 0
-#define SP .5
-#define LP  1
-#define SN  -.5
-#define LN  -1
+#define LIGHTEN .5
+#define BRIGHTEN  1
+#define DIM  -.5
+#define DARKEN  -1
 
-//the above values  can be fiddled with to make sense.
+//the above output values  can be fiddled with to make sense. Even though these are hard values here they will only be used in fuzzy calculations.
+// the idea behind what will happen is the following: A hard value comes in as the error and change in error from the detector. These value
+//is then assigned a series of 'mu' values, telling how similar the hard value is to certain fuzzily defined sets. We  have called these
+//sets by the comparative adjectives  'darker, dimmer, z, lighter, brighter' for our LED model. 
+
+//The responses to these cases are given by the corresponding verbs. 
 
 // macro functions
 #define MIN(a, b)  ( ((a) <= (b)) ? (a) : (b) )
 #define MAX(a, b)  ( ((a) >= (b)) ? (a) : (b) )
 
-
+//DARKEN<DIM<Z<LIGHTEN<BRIGHTEN
 
 
 
 //the following structs return mu values for different error and delta values we can get from our reading. We have 4 outputs we can give,
-//small positive (sp), large positive (lp), small negative (sn), large negative (ln) and zero (z). 
+//small positive (lighter), large positive (brighter), small negative (dimmer), large negative (darker) and zero (z). 
 
-float sp[50] = {
-		 0.6,//1
+float lighter[50] = {
+		 0.06,//1
 		 0.130,//2
 		 0.2,0,//3
 		 0.270,//4
@@ -47,7 +52,7 @@ float sp[50] = {
 		 0.270,//24
 		 0.20,//25
 		 0.130,//26
-		 0.60,//27
+		 0.060,//27
 		 0,//28
 		 0,//29
 		 0,//30
@@ -76,7 +81,7 @@ float sp[50] = {
 		
 };
 
-float lp[50]={
+float brighter[50]={
 		 1,	//1
 		 0.92//2
 		 0.85//3
@@ -90,7 +95,7 @@ float lp[50]={
 		 0.27//11
 		 0.2,//12
 		 0.130,//13
-		 0.6,//14
+		 0.06,//14
 		 0,//15
 		 0,//16
 		 0,//17
@@ -130,7 +135,7 @@ float lp[50]={
 		 0,//49
 		 0//50
 }
-float ln[50]={
+float darker[50]={
 		0,//1
 		 0,//2
 		 0,//3
@@ -169,7 +174,7 @@ float ln[50]={
 		 0,//35
 		 0,//36
 		 0,//37
-		 0.6,///38
+		 0.06,///38
 		 0.13,//39
 		 0.2,///40
 		 0.27,//41
@@ -188,7 +193,7 @@ float ln[50]={
 
 
 
-float sn[50]={
+float dimmer[50]={
 		 0,//1
 		 0,//2
 		 0,//3
@@ -213,7 +218,7 @@ float sn[50]={
 		 0,//22
 		 0,//23
 		 0,//24
-		 0.6,///25
+		 0.06,///25
 		 0.13,//26
 		 0.2,///27
 		 0.27,//28
@@ -239,7 +244,7 @@ float sn[50]={
 		 0.27,//46
 		 0.2,///47
 		 0.13,//48
-		 0.6,//49
+		 0.06,//49
 		  0 //50
 };
 float z[50]={
@@ -254,7 +259,7 @@ float z[50]={
 		 0,//9
 		 0,//10
 		 0,//11
-		 0.6,//12
+		 0.06,//12
 		 0.13,//13
 		 0.2,//14
 		 0.27,//15
@@ -280,7 +285,7 @@ float z[50]={
 		 0.27,//34
 		 0.2,//35
 		 0.13,//36
-		 0.6,//37
+		 0.06,//37
 		 0,//38
 		 0,//39
 		 0,//40
@@ -298,7 +303,7 @@ float z[50]={
 };
 
 //so, we have a resolution of 50. So these will be static, because they correspond to errors and deltas. So 25 is 0 error, 0 delta. 
-//these structs are not 100 symmetrical but whatever.
+//these arrays are not 100 symmetrical but whatever.
 
 
 //need a way to cast the continuous period counts into discreet errors and deltas. 
@@ -316,7 +321,11 @@ error = scaled_voltage -scaled_set_point ;//this value can go from -25 to plus 2
 prev_error = /*previous error value coming in from outside */// I dont know what any of these things are called outside the code so they will just
 						//need to be brought in and scaled inside this function so we can index to the arrays. 
 
-prev_scaled_error = 
+prev_scaled_error = //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*
+		+++++^^^^^^^^^^^^^^^NEED TO MATCH VARIABLES
+		
+*/ //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 delta = error - prev_error //
 
@@ -343,49 +352,60 @@ else if (error >=0)
 
 
 
-lp_delta_mu =  lp[delta_lookup];
-sp_delta_mu = sp[delta_lookup];
-ze_delta_mu = ze [delta_lookup];
-sn_delta_mu = sn[delta_lookup];
-ln_delta_mu = ln[delta_lookup];
+brighter_delta_mu =  brighter[delta_lookup];
+lighter_delta_mu = lighter[delta_lookup];
+z_delta_mu = z[delta_lookup];
+dimmer_delta_mu = dimmer[delta_lookup];
+darker_delta_mu = darker[delta_lookup];
 
 
-lp_error_mu =  lp[error_lookup];
-sp_error_mu = sp[error_lookup];
-ze_error_mu = ze[error_lookup];
-sn_error_mu = sn[error_lookup];
-ln_error_mu = ln[error_lookup];
+brighter_error_mu =  brighter[error_lookup];
+lighter_error_mu = lighter[error_lookup];
+z_error_mu = z[error_lookup];
+dimmer_error_mu = dimmer[error_lookup];
+darker_error_mu = darker[error_lookup];
 
 
 
 //Now we have to reference our rules:
 
-//RULE1=========> IF error = ZE AND delta = ZE THEN output = ZE
-rule1_mu = MIN(ze_delta_mu, ze_error_mu);
+//RULE1=========> IF error = z AND delta = z THEN output = Z
+rule1_mu = MIN(z_delta_mu, z_error_mu);
 rule1_output = Z;
 //...
 
+//RULE2=========>IF error = z AND delta = lighter THEN output = DIM
 
-//RULE2=========>IF error = ZE AND delta = SP THEN output = SN
-
-rule2_mu = MIN(sp_delta_mu, ze_error_mu);
-rule2_output = SN;
+rule2_mu = MIN(lighter_delta_mu, z_error_mu);
+rule2_output = DIM;
 //...
 
-
- //RULE3=======> IF error = SN AND delta = SN THEN output = LP
-rule3_mu = MIN(sn_delta_mu, sn_error_mu);
-rule3_output = LP;
+ //RULE3=======> IF error = dimmer AND delta = dimmer THEN output = BRIGHTEN
+rule3_mu = MIN(dimmer_delta_mu, dimmer_error_mu);
+rule3_output = LIGHTEN;
 //...
 
+//RULE4==========> IF error = brighter OR  delta = brighter THEN output = DARKEN
+rule4_mu = MAX(brighter_delta_mu, brighter_error_mu);
+rule4_output = DARKEN;
 
-//RULE4==========> IF error = LP OR  delta = LP THEN output = LN
-rule4_mu = MAX(lp_delta_mu, lp_error_mu);
-rule4_output = LN;
+//RULE5==========> IF error = darker OR  delta = darker THEN output = BRIGHTEN
+rule5_mu = MAX(darker_delta_mu, darker_error_mu);
+rule5_output = BRIGHTEN;
+
+//RULE6=========>IF error = z AND delta = darker THEN output = LIGHTEN
+rule6_mu = MIN(darker_delta_mu, z_error_mu);
+rule6_output = LIGHTEN;
+//...
+
+ //RULE7=======> IF error = lighter AND delta = lighter THEN output = BRIGHTEN
+rule7_mu = MIN(lighter_delta_mu, lighter_error_mu);
+rule7_output = DIM;
+//...
 
 //Find centroid
 
-centroid=(rule1_mu*rule1_output + rule2_mu*rule2_output + rule3_mu*rule3_output +rule4_mu+rule4_output)/(rule1_mu+rule2_mu+rule3_mu+rule4_mu);
+centroid=(rule1_mu*rule1_output + rule5_mu*rule5_output + rule2_mu*rule2_output + rule3_mu*rule3_output +rule4_mu+rule4_output + rule6_mu*rule6_output+rule7_mu*rule7_output)/(rule1_mu+rule2_mu+rule3_mu+rule4_mu + rule5_mu +rule6_mu+rule7_mu);
 
 //the output will ultimately be a voltage which will convert into a pwm signal. So, this number should be something to add or subtract from 
 //the current output. PWM_OUT = PWM_OUT + centroid
